@@ -1,210 +1,108 @@
-=== ZuqiArt&Crafts Website - AI Implementation Summary ===
+ZuqiArt&Crafts Website - AI Implementation Summary
 
 Date: October 19, 2025
 Updated: Secure API-based authentication implemented
 
-## 📋 Database Setup
+Database Setup
 Created Supabase database structure:
-- Table: `products` with fields: id (UUID), name, short_description, long_description, size, image_url, price, is_active, created_at, updated_at
+- Table: products with fields: id (UUID), name, short_description, long_description, size, image_url, price, is_active, created_at, updated_at
 - Added indexes for better query performance on is_active and created_at fields
 
-## 🔐 Environment Variables Required
-Create a `.env.local` file with:
+Environment Variables Required
+Create a .env.local file with:
 - NEXT_PUBLIC_SUPABASE_URL (your Supabase project URL - PUBLIC)
 - NEXT_PUBLIC_SUPABASE_ANON_KEY (your Supabase anon key - PUBLIC)
 - SUPABASE_SERVICE_ROLE_KEY (your Supabase service role key - SECRET!)
 - ADMIN_USERNAME (admin login username - SECRET, server-side only)
 - ADMIN_PASSWORD (admin login password - SECRET, server-side only)
 - ADMIN_SECRET (random string for token generation - SECRET)
+- NEXT_PUBLIC_SUPABASE_BUCKET (storage bucket name)
+- WHATSAPP_URL (WhatsApp chat URL)
+- GOOGLE_PAY_QR_URL (Google Pay QR code image)
+- GOOGLE_PAY_PHONE_NUMBER (UPI number)
+- BANK_NAME, BANK_ACCOUNT_HOLDER_NAME, BANK_ACCOUNT_NUMBER, BANK_IFSC_CODE
 
-## 🎨 Main Application (/)
-1. **Home Page** - Product listing with:
-   - Modern grid layout (responsive: 1/2/3/4 columns)
-   - Product cards showing image, name, short description, price
-   - Pagination component with ellipsis for many pages
-   - Search bar in header
-   - Dark/Light mode toggle (Sun/Moon icon)
-   - Loading states with skeleton screens
+Main Application Features
+1. Home Page - Product listing with modern grid layout, pagination, search bar, dark/light mode toggle
+2. Product Detail Page - Full product info, Buy Now and WhatsApp buttons
+3. Header Component - Business name as logo, search functionality, theme toggle
 
-2. **Product Detail Page** (/product/[id]):
-   - Large product image display
-   - Full product information (name, descriptions, price, size)
-   - Two action buttons: "Buy Now" and "Chat on WhatsApp"
-   - Back to products navigation
-   - Specifications section
+Admin Application Features
+1. Admin Login Page - Secure server-side authentication with env credentials
+2. Admin Dashboard - Product management table with CRUD operations
+3. Product Form - Add/edit products with image upload and URL support
 
-3. **Header Component**:
-   - Business name "ZuqiArt&Crafts" as logo
-   - Search functionality (UI ready)
-   - Theme toggle button
-   - Responsive design
-
-## 👨‍💼 Admin Application (/admin)
-1. **Admin Login Page** (/admin):
-   - Clean, minimalist login form
-   - Username and password authentication
-   - Session-based auth (stored in sessionStorage)
-   - Error handling for invalid credentials
-
-2. **Admin Dashboard** (/admin/dashboard):
-   - Product management table with:
-     - Product image thumbnails
-     - Name, price, size, status display
-     - Actions: Edit, Delete, Enable/Disable
-   - "Add Product" button
-   - Logout button in header
-   - Theme toggle available
-
-3. **Product Form** (Modal):
-   - Fields: name, short_description, long_description, size, image_url, price
-   - Used for both adding new products and editing existing ones
-   - Form validation
-   - Modal overlay design
-
-## 🎨 Design Features
-- Modern, clean UI inspired by reference images
-- Full dark mode support with smooth transitions
-- Responsive design (mobile, tablet, desktop)
-- Card-based product layout
-- Professional color scheme (Blue primary, Gray neutrals)
-- Hover effects and animations
-- Loading states and error handling
-
-## 📦 Dependencies Added
-- @supabase/supabase-js (v2.39.3) - Database connection
-- lucide-react (v0.263.1) - Modern icon library
-
-## 🗂️ File Structure
-```
-src/
-├── app/
-│   ├── admin/
-│   │   ├── layout.tsx (Admin auth provider wrapper)
-│   │   ├── page.tsx (Admin login)
-│   │   └── dashboard/
-│   │       └── page.tsx (Product management)
-│   ├── product/
-│   │   └── [id]/
-│   │       └── page.tsx (Product detail page)
-│   ├── layout.tsx (Root layout with theme provider)
-│   ├── page.tsx (Home - product listing)
-│   └── globals.css (Updated with dark mode support)
-├── admin/
-│   ├── components/
-│   │   ├── AdminHeader.tsx
-│   │   └── ProductForm.tsx
-│   └── contexts/
-│       └── AdminAuthContext.tsx
-├── components/
-│   ├── Header.tsx
-│   ├── ProductCard.tsx
-│   ├── Pagination.tsx
-│   └── ThemeToggle.tsx
-├── contexts/
-│   └── ThemeContext.tsx (Dark/Light mode management)
-├── lib/
-│   └── supabase.ts (Supabase client configuration)
-└── types/
-    └── product.ts (TypeScript interfaces)
-```
-
-## 🚀 Next Steps to Get Started
-1. Create a Supabase project at https://supabase.com
-2. Run the SQL schema provided to create the `products` table
-3. Copy `.env.local.example` to `.env.local` and fill in your values
-4. Run `npm install` to install dependencies
-5. Run `npm run dev` to start the development server
-6. Access the admin panel at http://localhost:3000/admin
-7. Add your products through the admin dashboard
-8. Products will appear on the main page at http://localhost:3000
-
-## ✨ Features Implemented
-✅ Product listing with pagination
-✅ Product detail page
-✅ Admin authentication
-✅ Admin product management (Create, Read, Update, Delete, Enable/Disable)
-✅ Dark/Light mode toggle
-✅ Responsive design
-✅ Modern UI based on reference images
-✅ WhatsApp integration button
-✅ Buy Now button (placeholder for future implementation)
-
-## 🔒 Security Implementation (UPDATED)
-**Server-Side Authentication:**
-- Admin login now uses secure API routes (`/api/admin/login`)
+Security Implementation
+- Admin login uses secure API routes (/api/admin/login)
 - Admin credentials stored server-side (NOT prefixed with NEXT_PUBLIC)
 - All database write operations go through authenticated API routes
 - Service role key used server-side to bypass RLS for admin operations
 - Token-based session management with 24-hour expiry
+- API Routes: /api/admin/login (POST), /api/admin/products (GET/POST), /api/admin/products/[id] (PUT/DELETE/PATCH)
 
-**API Routes Created:**
-- `/api/admin/login` - POST: Authenticate admin credentials
-- `/api/admin/products` - GET: Fetch all products (admin), POST: Create product
-- `/api/admin/products/[id]` - PUT: Update, DELETE: Delete, PATCH: Toggle status
+RLS Policies
+Enable RLS: ALTER TABLE products ENABLE ROW LEVEL SECURITY;
+Public can only view active products: CREATE POLICY "Public can view active products" ON products FOR SELECT TO public USING (is_active = true);
 
-**RLS Policies:**
-```sql
--- Enable RLS
-ALTER TABLE products ENABLE ROW LEVEL SECURITY;
+Security Benefits
+- Anon key is public but can only read active products
+- No one can write/modify data without valid admin token
+- Admin credentials never exposed to browser
+- Service role key stays on server
+- Token expires after 24 hours
 
--- Public can only view active products
-CREATE POLICY "Public can view active products"
-ON products FOR SELECT TO public
-USING (is_active = true);
-```
-
-**Security Benefits:**
-✅ Anon key is public but can only read active products
-✅ No one can write/modify data without valid admin token
-✅ Admin credentials never exposed to browser
-✅ Service role key stays on server
-✅ Token expires after 24 hours
-
-## 📝 Notes
-- Admin code is separated in the `src/admin/` directory for easy identification
-- No database migration files created as requested - manual SQL setup only
-- User authentication not implemented as requested
-- Admin links not shown on main app
-- WhatsApp button opens WhatsApp with product name in message
-- Buy Now button shows alert (to be implemented later)
-- **Security is now production-ready with server-side authentication**
-
-## 📸 Image Upload & Multiple Images Feature (Added)
-**What's New:**
-- Products can now have multiple images displayed in a carousel
+Image Upload & Multiple Images Feature
+- Multiple images per product with carousel display
 - Admin can upload images directly to Supabase Storage OR provide URLs
 - Image carousel with left/right arrows and dots indicator
-- Reorder images by dragging them left/right in admin form
-- First image is marked as "Main" image
-- Image counter shows current/total (e.g., "1 / 3")
+- Reorder images in admin form (marked as Main for first image)
+- Storage: images stored in Supabase Storage bucket (product-bucket)
+- Database: image_url column stores JSON array ["url1", "url2"]
+- API Route: /api/admin/upload (POST with multipart/form-data)
+- Limits: 5MB per image, supports JPEG, PNG, WebP, GIF
+- Helper function: getProductImages() to parse old and new format
 
-**Technical Details:**
-- `image_url` column now stores JSON array: `["url1", "url2", "url3"]`
-- Upload API: `/api/admin/upload` (POST with multipart/form-data)
-- Storage bucket: `product-bucket` (public read access)
-- Max file size: 5MB per image
-- Supported formats: JPEG, PNG, WebP, GIF
-- Components: `ImageCarousel` for display, updated `ProductForm` for management
-- Helper function: `getProductImages()` to parse old and new format
-
-**Environment Variable to Add:**
-```
-NEXT_PUBLIC_SUPABASE_BUCKET=product-bucket
-```
-
-## 🎨 UI/UX Improvements (Latest)
-**Toast Notifications:**
-- Replaced alert() popups with elegant toast notifications
-- Green success messages slide in from top-right
+UI/UX Improvements
+- Toast notifications: Replaced alert() with elegant toast messages (green success, red error, blue info)
 - Auto-dismiss after 3 seconds with manual close option
-- Color-coded: Green (success), Red (error), Blue (info)
+- Modal improvements: Fixed scrolling, title stays fixed, content scrolls independently
+- Modal properly sized with max-height (90vh)
+- Image support: Supabase, Azure Blob Storage, AWS S3 (all regions), Azure CDN, AWS CloudFront, Cloudinary, Imgur
 
-**Modal Improvements:**
-- Fixed modal scrolling - title stays fixed, content scrolls
-- Modal now properly sized with max-height (90vh)
-- Better layout with flexbox for header/content/footer
+Payment Flow Implementation
+- Buy Now button opens multi-step payment modal
+- Step 1: Payment method selection (Google Pay, Bank Transfer)
+- Step 2: Payment details (QR code for Google Pay, bank details for Bank Transfer)
+- Step 3: Confirmation screen with buyer information form
+  * Collects buyer name and delivery address
+  * WhatsApp button disabled until both fields filled
+  * Pre-formatted message includes: product name, ID, amount, buyer name, buyer address, transaction ID placeholder
+  * Note to attach transaction screenshot
+- Navigation buttons (Back/Next) between steps
+- Note displayed: Payment gateways to be implemented soon and verification message
 
-**Image Support Expanded:**
-- Added Azure Blob Storage support (*.blob.core.windows.net)
-- Added AWS S3 support (*.s3.amazonaws.com and all regions)
-- Now supports: Supabase, Azure, AWS S3, Cloudinary, Imgur
+Admin Panel Enhancements
+- Search bar to filter products by name or ID
+- Product ID column added to admin table (truncated display with full ID on hover)
+- Search functionality works in real-time
+- Shows "No products found" message when search has no results
+
+File Structure
+- src/app/ - Main application pages (home, product detail)
+- src/admin/ - Admin components and contexts (separated for easy identification)
+- src/components/ - Reusable UI components (Header, ProductCard, Pagination, ThemeToggle, ImageCarousel, Toast, PaymentModal)
+- src/contexts/ - React contexts (ThemeContext)
+- src/lib/ - Utility libraries (supabase, supabase-admin, auth)
+- src/types/ - TypeScript type definitions
+- src/hooks/ - Custom React hooks (useToast)
+- src/app/api/admin/ - API routes for authentication and product management
+
+Notes
+- No database migration files created (manual SQL setup only)
+- User authentication not implemented
+- Admin links not shown on main app
+- WhatsApp button redirects to env-configured URL (NEXT_PUBLIC_WHATSAPP_URL)
+- Buy Now opens multi-step payment modal
+- Dark/light mode fully functional with persistent storage
+- Payment flow includes Google Pay/UPI and Bank Transfer options
+- Users share payment proof via WhatsApp after payment

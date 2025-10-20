@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabase";
 import { Product, getProductImages } from "@/types/product";
 import Header from "@/components/Header";
 import ImageCarousel from "@/components/ImageCarousel";
+import PaymentModal from "@/components/PaymentModal";
 import { ArrowLeft, ShoppingCart, MessageCircle } from "lucide-react";
 import Link from "next/link";
 
@@ -14,6 +15,7 @@ export default function ProductDetail() {
   const router = useRouter();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   useEffect(() => {
     if (params.id) {
@@ -40,15 +42,14 @@ export default function ProductDetail() {
   };
 
   const handleBuyNow = () => {
-    // Placeholder for Buy Now functionality
-    alert("Buy Now functionality will be implemented");
+    setShowPaymentModal(true);
   };
 
   const handleWhatsApp = () => {
-    // Placeholder for WhatsApp functionality
+    const whatsappUrl =
+      process.env.NEXT_PUBLIC_WHATSAPP_URL || "https://wa.me/";
     const message = `Hi! I'm interested in ${product?.name}`;
-    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, "_blank");
+    window.open(`${whatsappUrl}?text=${encodeURIComponent(message)}`, "_blank");
   };
 
   const productImages = product ? getProductImages(product) : [];
@@ -189,6 +190,17 @@ export default function ProductDetail() {
             </div>
           </div>
         </div>
+
+        {/* Payment Modal */}
+        {product && (
+          <PaymentModal
+            isOpen={showPaymentModal}
+            onClose={() => setShowPaymentModal(false)}
+            productId={product.id}
+            productName={product.name}
+            productPrice={product.price}
+          />
+        )}
       </main>
     </div>
   );

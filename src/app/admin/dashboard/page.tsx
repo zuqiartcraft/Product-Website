@@ -16,6 +16,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | undefined>();
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -156,6 +157,15 @@ export default function AdminDashboard() {
     return null;
   }
 
+  // Filter products based on search query
+  const filteredProducts = products.filter((product) => {
+    const query = searchQuery.toLowerCase();
+    return (
+      product.name.toLowerCase().includes(query) ||
+      product.id.toLowerCase().includes(query)
+    );
+  });
+
   return (
     <div className="min-h-screen">
       <AdminHeader />
@@ -182,6 +192,17 @@ export default function AdminDashboard() {
           </button>
         </div>
 
+        {/* Search Bar */}
+        <div className="mb-6">
+          <input
+            type="text"
+            placeholder="Search by product name or ID..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
         {loading ? (
           <div className="text-center py-20">
             <p className="text-gray-600 dark:text-gray-400">
@@ -194,6 +215,12 @@ export default function AdminDashboard() {
               No products yet. Add your first product!
             </p>
           </div>
+        ) : filteredProducts.length === 0 ? (
+          <div className="text-center py-20">
+            <p className="text-xl text-gray-600 dark:text-gray-400 mb-4">
+              No products found matching &quot;{searchQuery}&quot;
+            </p>
+          </div>
         ) : (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
             <div className="overflow-x-auto">
@@ -202,6 +229,9 @@ export default function AdminDashboard() {
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                       Product
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      ID
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                       Price
@@ -218,7 +248,7 @@ export default function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                  {products.map((product) => {
+                  {filteredProducts.map((product) => {
                     const images = getProductImages(product);
                     const mainImage = images[0] || "/placeholder.png";
 
@@ -250,6 +280,14 @@ export default function AdminDashboard() {
                                 {product.short_description}
                               </div>
                             </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div
+                            className="text-xs font-mono text-gray-600 dark:text-gray-400 max-w-[120px] truncate"
+                            title={product.id}
+                          >
+                            {product.id}
                           </div>
                         </td>
                         <td className="px-6 py-4 text-gray-900 dark:text-gray-100">
