@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "ZuqiArt&Crafts - Quality Products",
-  description: "Explore our collection of quality products at ZuqiArt&Crafts",
+  description: "Explore our collection of quality products",
 };
 
 export default function RootLayout({
