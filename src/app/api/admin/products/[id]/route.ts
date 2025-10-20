@@ -15,7 +15,7 @@ function checkAuth(request: NextRequest) {
 // PUT - Update product
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const isAdmin = checkAuth(request);
@@ -25,7 +25,7 @@ export async function PUT(
     }
 
     const productData = await request.json();
-    const { id } = params;
+    const { id } = await params;
 
     const { data, error } = await supabaseAdmin
       .from("products")
@@ -48,7 +48,7 @@ export async function PUT(
 // DELETE - Delete product
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const isAdmin = checkAuth(request);
@@ -57,7 +57,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     const { error } = await supabaseAdmin
       .from("products")
@@ -79,7 +79,7 @@ export async function DELETE(
 // PATCH - Toggle product active status
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const isAdmin = checkAuth(request);
@@ -89,7 +89,7 @@ export async function PATCH(
     }
 
     const { is_active } = await request.json();
-    const { id } = params;
+    const { id } = await params;
 
     const { data, error } = await supabaseAdmin
       .from("products")

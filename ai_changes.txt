@@ -87,6 +87,10 @@ Admin Panel Enhancements
 - Search functionality works in real-time
 - Shows "No products found" message when search has no results
 
+Technical Updates
+- Fixed Next.js 15 async params compatibility in API routes
+- Updated route handlers to await params (PUT, DELETE, PATCH methods)
+
 File Structure
 - src/app/ - Main application pages (home, product detail)
 - src/admin/ - Admin components and contexts (separated for easy identification)
