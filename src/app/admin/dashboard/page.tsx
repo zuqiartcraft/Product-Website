@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAdminAuth } from "@/admin/contexts/AdminAuthContext";
-import { Product } from "@/types/product";
+import { Product, getProductImages } from "@/types/product";
 import AdminHeader from "@/admin/components/AdminHeader";
 import ProductForm from "@/admin/components/ProductForm";
 import { Plus, Edit, Trash2, Eye, EyeOff } from "lucide-react";
@@ -67,7 +67,6 @@ export default function AdminDashboard() {
 
       await fetchProducts();
       setShowForm(false);
-      alert("Product added successfully!");
     } catch (error) {
       console.error("Error adding product:", error);
       alert("Error adding product. Please try again.");
@@ -95,7 +94,6 @@ export default function AdminDashboard() {
       await fetchProducts();
       setShowForm(false);
       setEditingProduct(undefined);
-      alert("Product updated successfully!");
     } catch (error) {
       console.error("Error updating product:", error);
       alert("Error updating product. Please try again.");
@@ -148,7 +146,6 @@ export default function AdminDashboard() {
       }
 
       await fetchProducts();
-      alert("Product deleted successfully!");
     } catch (error) {
       console.error("Error deleting product:", error);
       alert("Error deleting product. Please try again.");
@@ -221,82 +218,92 @@ export default function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                  {products.map((product) => (
-                    <tr
-                      key={product.id}
-                      className={!product.is_active ? "opacity-50" : ""}
-                    >
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-4">
-                          <div className="relative w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded overflow-hidden flex-shrink-0">
-                            <Image
-                              src={product.image_url}
-                              alt={product.name}
-                              fill
-                              className="object-cover"
-                            />
-                          </div>
-                          <div>
-                            <div className="font-medium text-gray-900 dark:text-gray-100">
-                              {product.name}
+                  {products.map((product) => {
+                    const images = getProductImages(product);
+                    const mainImage = images[0] || "/placeholder.png";
+
+                    return (
+                      <tr
+                        key={product.id}
+                        className={!product.is_active ? "opacity-50" : ""}
+                      >
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-4">
+                            <div className="relative w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded overflow-hidden flex-shrink-0">
+                              <Image
+                                src={mainImage}
+                                alt={product.name}
+                                fill
+                                className="object-cover"
+                              />
+                              {images.length > 1 && (
+                                <div className="absolute bottom-0 right-0 bg-black/70 text-white text-xs px-1 rounded-tl">
+                                  +{images.length - 1}
+                                </div>
+                              )}
                             </div>
-                            <div className="text-sm text-gray-500 dark:text-gray-400 line-clamp-1">
-                              {product.short_description}
+                            <div>
+                              <div className="font-medium text-gray-900 dark:text-gray-100">
+                                {product.name}
+                              </div>
+                              <div className="text-sm text-gray-500 dark:text-gray-400 line-clamp-1">
+                                {product.short_description}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-gray-900 dark:text-gray-100">
-                        ${product.price}
-                      </td>
-                      <td className="px-6 py-4 text-gray-900 dark:text-gray-100">
-                        {product.size || "-"}
-                      </td>
-                      <td className="px-6 py-4">
-                        <span
-                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            product.is_active
-                              ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                              : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
-                          }`}
-                        >
-                          {product.is_active ? "Active" : "Inactive"}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <button
-                            onClick={() => handleToggleActive(product)}
-                            className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                            title={product.is_active ? "Disable" : "Enable"}
+                        </td>
+                        <td className="px-6 py-4 text-gray-900 dark:text-gray-100">
+                          ${product.price}
+                        </td>
+                        <td className="px-6 py-4 text-gray-900 dark:text-gray-100">
+                          {product.size || "-"}
+                        </td>
+                        <td className="px-6 py-4">
+                          <span
+                            className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                              product.is_active
+                                ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                                : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+                            }`}
                           >
-                            {product.is_active ? (
-                              <EyeOff className="w-4 h-4" />
-                            ) : (
-                              <Eye className="w-4 h-4" />
-                            )}
-                          </button>
-                          <button
-                            onClick={() => {
-                              setEditingProduct(product);
-                              setShowForm(true);
-                            }}
-                            className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
-                            title="Edit"
-                          >
-                            <Edit className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => handleDeleteProduct(product.id)}
-                            className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                            title="Delete"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                            {product.is_active ? "Active" : "Inactive"}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                              onClick={() => handleToggleActive(product)}
+                              className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                              title={product.is_active ? "Disable" : "Enable"}
+                            >
+                              {product.is_active ? (
+                                <EyeOff className="w-4 h-4" />
+                              ) : (
+                                <Eye className="w-4 h-4" />
+                              )}
+                            </button>
+                            <button
+                              onClick={() => {
+                                setEditingProduct(product);
+                                setShowForm(true);
+                              }}
+                              className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                              title="Edit"
+                            >
+                              <Edit className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteProduct(product.id)}
+                              className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                              title="Delete"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -311,6 +318,7 @@ export default function AdminDashboard() {
               setEditingProduct(undefined);
             }}
             initialData={editingProduct}
+            getToken={getToken}
           />
         )}
       </main>

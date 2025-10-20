@@ -1,24 +1,24 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
-import { Product } from "@/types/product";
+import { Product, getProductImages } from "@/types/product";
+import ImageCarousel from "./ImageCarousel";
 
 interface ProductCardProps {
   product: Product;
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
+  const images = getProductImages(product);
+
   return (
     <Link href={`/product/${product.id}`}>
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group">
         <div className="relative h-64 bg-gray-100 dark:bg-gray-700">
-          <Image
-            src={product.image_url}
+          <ImageCarousel
+            images={images}
             alt={product.name}
-            fill
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="h-full"
           />
         </div>
 

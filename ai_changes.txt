@@ -168,3 +168,43 @@ USING (is_active = true);
 - WhatsApp button opens WhatsApp with product name in message
 - Buy Now button shows alert (to be implemented later)
 - **Security is now production-ready with server-side authentication**
+
+## 📸 Image Upload & Multiple Images Feature (Added)
+**What's New:**
+- Products can now have multiple images displayed in a carousel
+- Admin can upload images directly to Supabase Storage OR provide URLs
+- Image carousel with left/right arrows and dots indicator
+- Reorder images by dragging them left/right in admin form
+- First image is marked as "Main" image
+- Image counter shows current/total (e.g., "1 / 3")
+
+**Technical Details:**
+- `image_url` column now stores JSON array: `["url1", "url2", "url3"]`
+- Upload API: `/api/admin/upload` (POST with multipart/form-data)
+- Storage bucket: `product-bucket` (public read access)
+- Max file size: 5MB per image
+- Supported formats: JPEG, PNG, WebP, GIF
+- Components: `ImageCarousel` for display, updated `ProductForm` for management
+- Helper function: `getProductImages()` to parse old and new format
+
+**Environment Variable to Add:**
+```
+NEXT_PUBLIC_SUPABASE_BUCKET=product-bucket
+```
+
+## 🎨 UI/UX Improvements (Latest)
+**Toast Notifications:**
+- Replaced alert() popups with elegant toast notifications
+- Green success messages slide in from top-right
+- Auto-dismiss after 3 seconds with manual close option
+- Color-coded: Green (success), Red (error), Blue (info)
+
+**Modal Improvements:**
+- Fixed modal scrolling - title stays fixed, content scrolls
+- Modal now properly sized with max-height (90vh)
+- Better layout with flexbox for header/content/footer
+
+**Image Support Expanded:**
+- Added Azure Blob Storage support (*.blob.core.windows.net)
+- Added AWS S3 support (*.s3.amazonaws.com and all regions)
+- Now supports: Supabase, Azure, AWS S3, Cloudinary, Imgur

@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import Image from "next/image";
 import { supabase } from "@/lib/supabase";
-import { Product } from "@/types/product";
+import { Product, getProductImages } from "@/types/product";
 import Header from "@/components/Header";
+import ImageCarousel from "@/components/ImageCarousel";
 import { ArrowLeft, ShoppingCart, MessageCircle } from "lucide-react";
 import Link from "next/link";
 
@@ -50,6 +50,8 @@ export default function ProductDetail() {
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, "_blank");
   };
+
+  const productImages = product ? getProductImages(product) : [];
 
   if (loading) {
     return (
@@ -108,11 +110,10 @@ export default function ProductDetail() {
           <div className="grid md:grid-cols-2 gap-8 p-8">
             {/* Image Section */}
             <div className="relative h-96 md:h-[500px] bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
-              <Image
-                src={product.image_url}
+              <ImageCarousel
+                images={productImages}
                 alt={product.name}
-                fill
-                className="object-cover"
+                className="h-full"
                 priority
               />
             </div>
